@@ -171,6 +171,8 @@ const char *Lexer::tokenString(Token tk)
             return "tk_DIV";
         case Token::Mod:
             return "tk_MOD";
+        case Token::Var:
+            return "tk_var";
         default:
             return "Unknown";
     }

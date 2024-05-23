@@ -29,7 +29,7 @@ void yyerror(const Lexer& lexer, int& value, const char *msg)
 %token De               "De"
 %token Funcion          "Funcion"
 %token Procedimiento    "Procedimiento"
-%token Variable         "var"
+%token Variable         "variable"
 %token Final            "Final"
 %token Llamar           "Llamar"
 %token Lea              "Lea"
@@ -97,41 +97,58 @@ void yyerror(const Lexer& lexer, int& value, const char *msg)
 %token Division         "/"
 %token Div              "div"
 %token Mod              "mod"
+%token Var              "var"
 
 %%
 
 programa: Inicio declaraciones Fin
         | declaraciones Inicio declaraciones Fin
-        ;
+;
 
 declaraciones: declaraciones declaracion
              | declaracion
-             ;
+;
 
 declaracion: tipo_declaracion lista_variables
            | asignacion
            | declaracion_escriba
            | condicional
            | definicion_funcion
+           | definicion_procedimiento
+           | declaracion_llamar
+           | arreglo_inicializar
 ;
 
+//PROCEDIMIENTO
+definicion_procedimiento: Procedimiento encabezado_procedimiento Inicio declaraciones Fin
+;
+
+encabezado_procedimiento: Variable ParAbierto parametros_opcional ParCerrado
+                        | Variable
+;
+
+//FUNCION
 definicion_funcion: Funcion encabezado_funcion Inicio declaraciones Retorne expr Fin
-                | Funcion encabezado_funcion  declaracion Inicio declaraciones Retorne expr Fin
+                | Funcion encabezado_funcion declaraciones Inicio declaraciones Retorne expr Fin
+                | Funcion encabezado_funcion Inicio Retorne expr Fin
 ;
 
-encabezado_funcion: Variable ParAbierto parametros_opt ParCerrado DosPuntos tipo_declaracion
-                  ;
+encabezado_funcion: Variable ParAbierto parametros_opcional ParCerrado DosPuntos tipo_declaracion
+                | Variable DosPuntos tipo_declaracion
+;
 
-parametros_opt: parametros
+parametros_opcional: parametros
               | /* empty */
-              ;
+;
 
 parametros: parametros Coma parametro
           | parametro
-          ;
+;
 
 parametro: tipo_declaracion Variable
-         ;
+        | arreglo_inicializar
+        | Var tipo_declaracion Variable
+;
 
 tipo_declaracion: Entero
                 | Real
@@ -142,37 +159,44 @@ tipo_declaracion: Entero
 
 lista_variables: lista_variables Coma Variable
                | Variable
-               ;
+;
 
 asignacion: Variable Asignar expr
-          ;
+        | arreglo Asignar Decimal
+;
 
-declaracion_escriba: Escriba Variable
-                    | Escriba Letras
-                    | Escriba Letra
-                   ;
+declaracion_escriba: Escriba llamada_funcion
+                   | Escriba expr
+;
 
-condicional: Si sentencias_comparacion Entonces declaraciones clausulas_sino_opt FinSi
-            | Si sentencias_comparacion Entonces Retorne expr clausulas_sino_opt
-           ;
+declaracion_llamar: Llamar llamada_funcion
+;
 
-clausulas_sino_opt: /* empty */
+//CONDICIONALES
+condicional: Si sentencias_comparacion Entonces declaraciones clausulas_sino_opcional FinSi
+            //| Si sentencias_comparacion Entonces Retorne expr clausulas_sino_opcional
+;
+
+clausulas_sino_opcional: /* empty */
                   | clausulas_sino Retorne expr
                   | clausulas_sino
-                  ;
+;
 
 clausulas_sino: clausulas_sino Sino Si sentencias_comparacion Entonces declaraciones
               | clausulas_sino Sino Si sentencias_comparacion Entonces
               | Sino declaraciones
               | Sino
-              ;
+;
+
+//COMPARACION
 
 sentencias_comparacion: sentencia_comparacion
                     | sentencias_comparacion comparacion sentencia_comparacion
+;                 
 
 sentencia_comparacion: expr comparacion expr
                     | ParAbierto expr comparacion expr ParCerrado
-                    ;
+;
 
 comparacion: Igual
            | Mayor
@@ -180,17 +204,30 @@ comparacion: Igual
            | Y
            | O
            | No
-           ;
+;
+
+//ARREGLO
+arreglo: Variable arreglo_brackets
+;
+
+arreglo_inicializar: Var Arreglo arreglo_brackets De Entero Variable
+                | Arreglo arreglo_brackets De Entero Variable
+;
+
+arreglo_brackets: BrackAbierto Decimal BrackCerrado
+;
+
+//EXPRESIONES
 
 expr: expr Suma term
     | expr Resta term
     | term
-    ;
+;
 
 term: term Multiplicacion factor
     | term Division factor
     | factor
-    ;
+;
 
 factor: Variable
       | Decimal
@@ -200,17 +237,17 @@ factor: Variable
       | Falso
       | ParAbierto expr ParCerrado
       | llamada_funcion
-      ;
+      | arreglo
+;
 
-llamada_funcion: Variable ParAbierto argumentos_opt ParCerrado
-               ;
+llamada_funcion: Variable ParAbierto argumentos_opcional ParCerrado
+            | Variable
+;
 
-argumentos_opt: argumentos
+argumentos_opcional: argumentos
               | /* empty */
-              ;
+;
 
 argumentos: argumentos Coma expr
           | expr
-          ;
-
-%%
+;

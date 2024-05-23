@@ -32,7 +32,7 @@ void printToken(Token token, const char* text)
 
 "inicio"            { printToken(Token::Inicio, yytext); return Token::Inicio; }
 "fin"               { printToken(Token::Fin, yytext); return Token::Fin; }
-"finsi"             { printToken(Token::FinSi, yytext); return Token::FinSi; }  // Añadir el patrón para "FinSi" antes que otras palabras clave
+"finsi"             { printToken(Token::FinSi, yytext); return Token::FinSi; }
 
 "De"                { printToken(Token::De, yytext); return Token::De; }
 "Funcion"           { printToken(Token::Funcion, yytext); return Token::Funcion; }
@@ -79,6 +79,7 @@ void printToken(Token token, const char* text)
 "["                 { printToken(Token::BrackAbierto, yytext); return Token::BrackAbierto; }
 "]"                 { printToken(Token::BrackCerrado, yytext); return Token::BrackCerrado; }
 "="                 { printToken(Token::Igual, yytext); return Token::Igual; }
+"Var"               { printToken(Token::Var, yytext); return Token::Var; }
 
 [a-zA-Z_][0-9a-zA-Z_]*  { printToken(Token::Variable, yytext); return Token::Variable; }  // Este patrón debe venir después de "FinSi"
 \"[^\"]*\"              { printToken(Token::Letras, yytext); return Token::Letras; }
