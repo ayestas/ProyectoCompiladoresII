@@ -1,9 +1,9 @@
 ## Commit - Avance 1 Final
 1. Correr comandos de build:
-   a. mkdir build
-   b. cd build
-   c. cmake ../
-   d. make
+   - mkdir build
+   - cd build
+   - cmake ../
+   - make
 
 2. Correr los ejemplos dentro 'minilpp_tests' (ejemplo):
    a. ./Lpp ../minilpp_tests/HolaMundo.lpp
