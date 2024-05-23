@@ -143,7 +143,7 @@ encabezado_funcion: Variable ParAbierto parametros_opcional ParCerrado DosPuntos
                 | Variable DosPuntos tipo_declaracion
 ;
 
-parametros_opcional: /* empty */
+parametros_opcional: /* vacio */
               | parametros
 ;
 
@@ -187,7 +187,7 @@ condicional: condicion sino_opcional fin_si
 condicion: Si sentencias_comparacion condicional_entonces
 ;
 
-sino_opcional: /* empty */
+sino_opcional: /* vacio */
             | Sino Retorne expr
             | Sino declaraciones
 ;
@@ -266,8 +266,7 @@ term: term Multiplicacion factor
     | factor
     ;
 
-factor: Variable
-      | Decimal
+factor: Decimal
       | Letras
       | Letra
       | Verdadero
@@ -282,7 +281,7 @@ llamada_funcion: Variable ParAbierto argumentos_opcional ParCerrado
 ;
 
 argumentos_opcional: argumentos
-              | /* empty */
+              | /* vacio */
 ;
 
 argumentos: argumentos Coma expr

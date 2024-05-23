@@ -25,7 +25,6 @@ void printToken(Token token, const char* text)
 }
 %}
 
-%x ESCRIBA
 %x comment
 
 %%
@@ -37,7 +36,7 @@ void printToken(Token token, const char* text)
 "De"                { printToken(Token::De, yytext); return Token::De; }
 "Funcion"           { printToken(Token::Funcion, yytext); return Token::Funcion; }
 "Procedimiento"     { printToken(Token::Procedimiento, yytext); return Token::Procedimiento; }
-"Escriba"           { BEGIN ESCRIBA; printToken(Token::Escriba, yytext); return Token::Escriba; }
+"Escriba"           { printToken(Token::Escriba, yytext); return Token::Escriba; }
 "Mientras"          { printToken(Token::Mientras, yytext); return Token::Mientras; }
 "Haga"              { printToken(Token::Haga, yytext); return Token::Haga; }
 "Para"              { printToken(Token::Para, yytext); return Token::Para; }
@@ -86,7 +85,7 @@ void printToken(Token token, const char* text)
 "<="               { printToken(Token::AsignarWhile, yytext); return Token::AsignarWhile; }
 "<>"               { printToken(Token::Diferente, yytext); return Token::Diferente; }
 
-[a-zA-Z_][0-9a-zA-Z_]*  { printToken(Token::Variable, yytext); return Token::Variable; }  // Este patrón debe venir después de "FinSi"
+[a-zA-Z_][0-9a-zA-Z_]*  { printToken(Token::Variable, yytext); return Token::Variable; }
 \"[^\"]*\"              { printToken(Token::Letras, yytext); return Token::Letras; }
 [0-9]+                  { printToken(Token::Decimal, yytext); return Token::Decimal; }
 \'[^\']\'               { printToken(Token::Letra, yytext); return Token::Letra; }
@@ -94,15 +93,11 @@ void printToken(Token token, const char* text)
 "//"[^\n]*\n { }
 "/*" { BEGIN(comment); }
 
-<ESCRIBA>[ \t]*[a-zA-Z_][0-9a-zA-Z_]*[ \t]* { BEGIN INITIAL; printToken(Token::Variable, yytext); return Token::Variable; }
-<ESCRIBA>\"[^\"]*\"                         { BEGIN INITIAL; printToken(Token::Letras, yytext); return Token::Letras; }
-<ESCRIBA>\'[^\']\'                          { BEGIN INITIAL; printToken(Token::Letra, yytext); return Token::Letra; }
-
 <comment>"*/" { BEGIN(INITIAL); }
 <comment>.|\n { /* Nothing */ }
 <comment><<EOF>> { std::cerr << "Advertencia: Bloque de comentario sin cerrar.\n";  }
 
 [ \t\n]+        { }
-.               { fprintf(stderr, "Simbolo Invalido: %s\n", yytext); exit(1); }
+.               { fprintf(stderr, "Simbolo Invalido en la línea %d: %s\n", yylineno, yytext); exit(1); }
 
 %%
