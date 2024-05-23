@@ -98,7 +98,8 @@ void yyerror(const Lexer& lexer, int& value, const char *msg)
 %token Div              "div"
 %token Mod              "mod"
 %token Var              "var"
-%token AsignarWhile       "<="
+%token AsignarWhile     "<="
+%token Diferente        "<>"
 
 %%
 
@@ -113,17 +114,18 @@ declaraciones: declaraciones declaracion
 declaracion: tipo_declaracion lista_variables
            | asignacion
            | declaracion_escriba
-           | condicional
-           | definicion_funcion
-           | definicion_procedimiento
+           | declaracion_funcion
+           | declaracion_procedimiento
            | declaracion_llamar
-           | arreglo_inicializar
            | declaracion_para
            | declaracion_mientras
+           | arreglo_inicializar
+           | condicional
 ;
 
 //PROCEDIMIENTO
-definicion_procedimiento: Procedimiento encabezado_procedimiento Inicio declaraciones Fin
+declaracion_procedimiento: Procedimiento encabezado_procedimiento Inicio declaraciones Fin
+                        | Procedimiento encabezado_procedimiento declaraciones Inicio declaraciones Fin
 ;
 
 encabezado_procedimiento: Variable ParAbierto parametros_opcional ParCerrado
@@ -131,17 +133,18 @@ encabezado_procedimiento: Variable ParAbierto parametros_opcional ParCerrado
 ;
 
 //FUNCION
-definicion_funcion: Funcion encabezado_funcion Inicio declaraciones Retorne expr Fin
+declaracion_funcion: Funcion encabezado_funcion Inicio declaraciones Retorne expr Fin
                 | Funcion encabezado_funcion declaraciones Inicio declaraciones Retorne expr Fin
                 | Funcion encabezado_funcion Inicio Retorne expr Fin
+                | Funcion encabezado_funcion declaraciones Inicio declaraciones Fin
 ;
 
 encabezado_funcion: Variable ParAbierto parametros_opcional ParCerrado DosPuntos tipo_declaracion
                 | Variable DosPuntos tipo_declaracion
 ;
 
-parametros_opcional: parametros
-              | /* empty */
+parametros_opcional: /* empty */
+              | parametros
 ;
 
 parametros: parametros Coma parametro
@@ -166,6 +169,8 @@ lista_variables: lista_variables Coma Variable
 
 asignacion: Variable Asignar expr
         | arreglo Asignar Decimal
+        | arreglo Asignar Variable
+        | arreglo Asignar arreglo
 ;
 
 declaracion_escriba: Escriba llamada_funcion
@@ -176,19 +181,19 @@ declaracion_llamar: Llamar llamada_funcion
 ;
 
 //CONDICIONALES
-condicional: Si sentencias_comparacion Entonces declaraciones clausulas_sino_opcional fin_si
-            //| Si sentencias_comparacion Entonces Retorne expr clausulas_sino_opcional
+condicional: condicion sino_opcional fin_si
 ;
 
-clausulas_sino_opcional: /* empty */
-                  | clausulas_sino Retorne expr
-                  | clausulas_sino
+condicion: Si sentencias_comparacion condicional_entonces
 ;
 
-clausulas_sino: clausulas_sino Sino Si sentencias_comparacion Entonces declaraciones
-              | clausulas_sino Sino Si sentencias_comparacion Entonces
-              | Sino declaraciones
-              | Sino
+sino_opcional: /* empty */
+            | Sino Retorne expr
+            | Sino declaraciones
+;
+
+condicional_entonces: Entonces Retorne expr
+                    | Entonces declaraciones
 ;
 
 fin_si: Fin Si
@@ -196,9 +201,11 @@ fin_si: Fin Si
 
 //PARA
 declaracion_para: Para para_condicion Hasta Decimal Haga declaraciones fin_para
+                | Para para_condicion Hasta Variable Haga declaraciones fin_para
 ;
 
 para_condicion: Variable Asignar Decimal
+              | Variable Asignar Variable
 ;
 
 fin_para: Fin Para
@@ -230,6 +237,7 @@ comparacion: Igual
            | Y
            | O
            | No
+           | Diferente
 ;
 
 //ARREGLO
@@ -241,6 +249,7 @@ arreglo_inicializar: Var Arreglo arreglo_brackets De Entero Variable
 ;
 
 arreglo_brackets: BrackAbierto Decimal BrackCerrado
+                | BrackAbierto Variable BrackCerrado
 ;
 
 //EXPRESIONES
@@ -252,8 +261,10 @@ expr: expr Suma term
 
 term: term Multiplicacion factor
     | term Division factor
+    | term Mod factor
+    | term Div factor
     | factor
-;
+    ;
 
 factor: Variable
       | Decimal

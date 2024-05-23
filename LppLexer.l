@@ -74,6 +74,9 @@ void printToken(Token token, const char* text)
 "-"                 { printToken(Token::Resta, yytext); return Token::Resta; }
 "*"                 { printToken(Token::Multiplicacion, yytext); return Token::Multiplicacion; }
 "/"                 { printToken(Token::Division, yytext); return Token::Division; }
+"Div"                 { printToken(Token::Div, yytext); return Token::Div; }
+"Mod"                 { printToken(Token::Mod, yytext); return Token::Mod; }
+
 "("                 { printToken(Token::ParAbierto, yytext); return Token::ParAbierto; }
 ")"                 { printToken(Token::ParCerrado, yytext); return Token::ParCerrado; }
 "["                 { printToken(Token::BrackAbierto, yytext); return Token::BrackAbierto; }
@@ -81,6 +84,7 @@ void printToken(Token token, const char* text)
 "="                 { printToken(Token::Igual, yytext); return Token::Igual; }
 "Var"               { printToken(Token::Var, yytext); return Token::Var; }
 "<="               { printToken(Token::AsignarWhile, yytext); return Token::AsignarWhile; }
+"<>"               { printToken(Token::Diferente, yytext); return Token::Diferente; }
 
 [a-zA-Z_][0-9a-zA-Z_]*  { printToken(Token::Variable, yytext); return Token::Variable; }  // Este patrón debe venir después de "FinSi"
 \"[^\"]*\"              { printToken(Token::Letras, yytext); return Token::Letras; }
