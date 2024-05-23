@@ -84,7 +84,8 @@ enum class Token: int {
     Division = 321,
     Div = 322,
     Mod = 323,
-    Var = 324
+    Var = 324,
+    AsignarWhile = 325
 };
 
 class Lexer

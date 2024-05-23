@@ -173,6 +173,8 @@ const char *Lexer::tokenString(Token tk)
             return "tk_MOD";
         case Token::Var:
             return "tk_var";
+        case Token::AsignarWhile:
+            return "tk_AsgW";
         default:
             return "Unknown";
     }

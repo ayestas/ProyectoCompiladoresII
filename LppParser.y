@@ -98,6 +98,7 @@ void yyerror(const Lexer& lexer, int& value, const char *msg)
 %token Div              "div"
 %token Mod              "mod"
 %token Var              "var"
+%token AsignarWhile       "<="
 
 %%
 
@@ -117,6 +118,8 @@ declaracion: tipo_declaracion lista_variables
            | definicion_procedimiento
            | declaracion_llamar
            | arreglo_inicializar
+           | declaracion_para
+           | declaracion_mientras
 ;
 
 //PROCEDIMIENTO
@@ -173,7 +176,7 @@ declaracion_llamar: Llamar llamada_funcion
 ;
 
 //CONDICIONALES
-condicional: Si sentencias_comparacion Entonces declaraciones clausulas_sino_opcional FinSi
+condicional: Si sentencias_comparacion Entonces declaraciones clausulas_sino_opcional fin_si
             //| Si sentencias_comparacion Entonces Retorne expr clausulas_sino_opcional
 ;
 
@@ -186,6 +189,29 @@ clausulas_sino: clausulas_sino Sino Si sentencias_comparacion Entonces declaraci
               | clausulas_sino Sino Si sentencias_comparacion Entonces
               | Sino declaraciones
               | Sino
+;
+
+fin_si: Fin Si
+;
+
+//PARA
+declaracion_para: Para para_condicion Hasta Decimal Haga declaraciones fin_para
+;
+
+para_condicion: Variable Asignar Decimal
+;
+
+fin_para: Fin Para
+;
+
+//MIENTRAS
+declaracion_mientras: Mientras mientras_condicion Haga declaraciones fin_mientras
+;
+
+mientras_condicion: Variable AsignarWhile Decimal
+;
+
+fin_mientras: Fin Mientras
 ;
 
 //COMPARACION

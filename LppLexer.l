@@ -80,6 +80,7 @@ void printToken(Token token, const char* text)
 "]"                 { printToken(Token::BrackCerrado, yytext); return Token::BrackCerrado; }
 "="                 { printToken(Token::Igual, yytext); return Token::Igual; }
 "Var"               { printToken(Token::Var, yytext); return Token::Var; }
+"<="               { printToken(Token::AsignarWhile, yytext); return Token::AsignarWhile; }
 
 [a-zA-Z_][0-9a-zA-Z_]*  { printToken(Token::Variable, yytext); return Token::Variable; }  // Este patrón debe venir después de "FinSi"
 \"[^\"]*\"              { printToken(Token::Letras, yytext); return Token::Letras; }
