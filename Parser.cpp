@@ -1,7 +1,7 @@
+#include <unordered_map>
 #include "Parser.hpp"
-#include "ParserImpl.hpp"
 
 int Parser::parse()
 {
-    return yyparse(lexer, value);
+    return yyparse(*this);
 }

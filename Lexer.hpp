@@ -3,24 +3,25 @@
 
 #include <string>
 #include <iosfwd>
-#include <iostream>
+#include "ParserImpl.hpp"
 
-enum class Token: int {
+enum class Token: int 
+{
     Eof = 0,
     Error = 256,
     Undef = 257,
     //BLOQUES
-    Inicio = 258,
-    Fin = 259,
+    Eol = 258,
+    Inicio = 259,
+    Fin = 260,
     //DECLARACIONES
-    De = 260,
-    Funcion = 261,
-    Procedimiento = 262,
-    Variable = 263,
-    Final = 264,
-    Llamar = 265,
-    Lea = 266,
-    Escriba = 267,
+    Escriba = 261,
+    De = 262,
+    Funcion = 263,
+    Procedimiento = 264,
+    Final = 265,
+    Llamar = 266,
+    Lea = 267,
     Retorne = 268,
     Es = 269,
     Registro = 270,
@@ -37,80 +38,86 @@ enum class Token: int {
     Si = 280,
     Entonces = 281,
     Sino = 282,
-    FinSi = 283,
-    //BUCLES
-    Para = 284,
-    Mientras = 285,
-    Haga = 286,
-    Repita = 287,
-    Hasta = 288,
-    Caso = 289,
+    //CICLOS
+    Para = 283,
+    Mientras = 284,
+    Haga = 285,
+    Repita = 286,
+    Hasta = 287,
+    Caso = 288,
     //COMPARACION
-    O = 290,
-    Y = 291,
-    NO = 292,
-    Mayor = 293,
-    Menor = 294,
+    O = 289,
+    Y = 290,
+    No = 291,
+    Mayor = 292,
+    Menor = 293,
+    Igual = 294,
+    NoIgual = 295,
+    MayorIgual = 296,
+    MenorIgual = 297,
+    Diferente = 298,
     //TIPOS DE DATOS
-    Entero = 295,
-    Real = 296,
-    Cadena = 297,
-    Booleano = 298,
-    Caracter = 299,
-    Arreglo = 300,
-    Tipo = 301,
+    Variable = 299,
+    Entero = 300,
+    Real = 301,
+    Caracter = 302,
+    Cadena = 303,
+    Booleano = 304,
+    Arreglo = 305,
+    Tipo = 306,
     //DATOS
-    Letras = 302,
-    Decimal = 303,
-    Binario = 304,
-    Hexadecimal = 305,
-    Verdadero = 306,
-    Falso = 307,
-    Letra = 308,
-    Digito = 309,
+    Letras = 307,
+    Decimal = 308,
+    Binario = 309,
+    Hexadecimal = 310,
+    Verdadero = 311,
+    Falso = 312,
+    Letra = 313,
+    Numero = 314,
     //SIMBOLOS
-    Asignar = 310,
-    Coma = 311,
-    ParAbierto = 312,
-    ParCerrado = 313,
-    BrackAbierto = 314,
-    BrackCerrado = 315,
-    DosPuntos = 316,
-    Igual = 317,
-    //OPERADORES
-    Suma = 318,
-    Resta = 319,
-    Multiplicacion = 320,
-    Division = 321,
-    Div = 322,
-    Mod = 323,
-    Var = 324,
-    AsignarWhile = 325,
-    Diferente = 326
+    Asignar = 315,
+    Coma = 316,
+    ParAbierto = 317,
+    ParCerrado = 318,
+    BrackAbierto = 319,
+    BrackCerrado = 320,
+    DosPuntos = 321,
+    SignoIgual = 322,
+    PuntoComa = 323,
+    //OPERANDOS
+    Suma = 324,
+    Resta = 325,
+    Multiplicacion = 326,
+    Division = 327,
+    Mod = 328,
+    Div = 329,
+    Var = 330,
 };
 
 class Lexer
 {
 public:
     using yyscan_t = void*;
-    using BisonValueType = int;
 
 public:
-    Lexer(std::istream& _in);
+    Lexer(std::istream& _in, std::ostream& _out);
     ~Lexer();
 
-    Token nextToken(BisonValueType *lval)
+    Token nextToken(ParserValueType *lval)
     { return nextTokenHelper(yyscanner, lval); }
 
     std::string text() const;
 
+    long line() const;
+
     static const char *tokenString(Token tk);
 
-private:    
-    Token nextTokenHelper(yyscan_t yyscanner, BisonValueType *lval);
+private:
+    Token nextTokenHelper(yyscan_t yyscanner, ParserValueType *lval);
 
 private:
     std::istream& in;
+    std::ostream& out;
     yyscan_t yyscanner;
 
 };

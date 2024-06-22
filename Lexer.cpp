@@ -2,8 +2,8 @@
 #include "Lexer.hpp"
 #include "LexerImpl.hpp"
 
-Lexer::Lexer(std::istream& _in)
-  : in(_in)
+Lexer::Lexer(std::istream& _in, std::ostream& _out)
+  : in(_in), out(_out)
 {
     yylex_init_extra(&in, &yyscanner);
 }
@@ -18,110 +18,118 @@ std::string Lexer::text() const
     return std::string(yyget_text(yyscanner));
 }
 
-const char *Lexer::tokenString(Token tk)
+long Lexer::line() const
+{
+    return yyget_lineno(yyscanner);
+}
+
+const char *Lexer::tokenString(Token tk) 
 {
     switch (tk)
     {
-        //BLOQUES
+        case Token::Eol:
+            return "EOL";
         case Token::Inicio: 
             return "TK_I";
         case Token::Fin: 
             return "TK_Fin";
-
         //DECLARACIONES
-        case Token::De: 
+        case Token::Escriba:
+            return "TK_Escriba";
+        case Token::De:
             return "TK_De";
         case Token::Funcion:
-            return "TK_Fun";
+            return "TK_Func";
         case Token::Procedimiento:
-            return "TK_Pro";
-        case Token::Variable:
-            return "var";
+            return "TK_Proc";
         case Token::Final:
-            return "Fnl";
+            return "TK_Final";
         case Token::Llamar:
-            return "TK_Lla";
+            return "TK_Llamar";
         case Token::Lea:
             return "TK_Lea";
-        case Token::Escriba: 
-            return "TK_Esc";
         case Token::Retorne:
-            return "TK_Ret";
+            return "TK_Retorne";
         case Token::Es:
             return "TK_Es";
         case Token::Registro:
             return "TK_Reg";
-        case Token::Archivo:
-            return "TK_Ach";
+        case Token::Archivo:    
+            return "TK_Arch";
         case Token::Secuencial:
             return "TK_Sec";
         case Token::Abrir:
-            return "TK_Abr";
+            return "TK_Abrir";
         case Token::Como:
             return "TK_Como";
         case Token::Lectura:
-            return "TK_Lec";
+            return "TK_Lectura";
         case Token::Escritura:
-            return "TK_Ect";
+            return "TK_Escritura";
         case Token::Cerrar:
-            return "TK_Crr";
+            return "TK_Cerrar";
         case Token::Leer:
             return "TK_Leer";
         case Token::Escribir:
-            return "TK_Ecb";
-
+            return "TK_Escribir";
         //CONDICIONALES
         case Token::Si:
             return "TK_Si";
         case Token::Entonces:
-            return "TK_Ent";
+            return "TK_Entonces";
         case Token::Sino:
-            return "TK_Sin";
-        case Token::FinSi:
-            return "TK_FinSi";
-
-        //BUCLES
+            return "TK_Sino";
+        //CICLOS
         case Token::Para:
-            return "TK_Par";
+            return "TK_Para";
         case Token::Mientras:
-            return "TK_Mie";
+            return "TK_Mientras";
         case Token::Haga:
-            return "TK_Hag";
+            return "TK_Haga";
         case Token::Repita:
-            return "TK_Rep";
+            return "TK_Repita";
         case Token::Hasta:
-            return "TK_Has";
+            return "TK_Hasta";
         case Token::Caso:
             return "TK_Caso";
-        
         //COMPARACION
         case Token::O:
             return "TK_O";
         case Token::Y:
             return "TK_Y";
-        case Token::NO:
+        case Token::No:
             return "TK_No";
         case Token::Mayor:
-            return "TK_Myr";
+            return "TK_Mayor";
         case Token::Menor:
-            return "TK_Mnr";
-
+            return "TK_Menor";
+        case Token::Igual:
+            return "TK_Igual";
+        case Token::NoIgual:
+            return "TK_NoIgual";
+        case Token::MayorIgual:
+            return "TK_MayorIgual";
+        case Token::MenorIgual:
+            return "TK_MenorIgual";
+        case Token::Diferente:
+            return "TK_Diferente";
         //TIPOS DE DATOS
+        case Token::Variable:
+            return "TK_Variable";
         case Token::Entero:
-            return "TK_Entr";
+            return "TK_Ent";
         case Token::Real:
             return "TK_Real";
-        case Token::Cadena: 
-            return "TK_Cadn";
-        case Token::Booleano:
-            return "TK_Bool";
         case Token::Caracter:
             return "TK_Char";
+        case Token::Cadena:
+            return "TK_Cadena";
+        case Token::Booleano:
+            return "TK_Bool";
         case Token::Arreglo:
-            return "TK_Arr";
+            return "TK_Arreglo";
         case Token::Tipo:
             return "TK_Tipo";
-
         //DATOS
         case Token::Letras:
             return "tk_ltrs";
@@ -132,51 +140,47 @@ const char *Lexer::tokenString(Token tk)
         case Token::Hexadecimal:
             return "tk_hex";
         case Token::Verdadero:
-            return "tk_v";
+            return "tk_true";
         case Token::Falso:
-            return "tk_f";
+            return "tk_false";
         case Token::Letra:
             return "tk_ltr";
-        case Token::Digito:
-            return "tk_dig";
-
+        case Token::Numero:
+            return "tk_dgt";
         //SIMBOLOS
         case Token::Asignar:
-            return "tk_asg";
+            return "tk_Asignar";
         case Token::Coma:
-            return "tk_coma";
+            return "tk_Coma";
         case Token::ParAbierto:
-            return "tk_parA";
+            return "tk_ParAbierto";
         case Token::ParCerrado:
-            return "tk_parC";
-        case Token::BrackAbierto:
-            return "tk_brkA";
+            return "tk_ParCerrado";
+        case Token::BrackAbierto:  
+            return "tk_BrackAbierto";
         case Token::BrackCerrado:
-            return "tk_brkC";
+            return "tk_BrackCerrado";
         case Token::DosPuntos:
-            return "tk_dpts";
-        case Token::Igual:
-            return "tk_igl";
-        
-        //OPERADORES
+            return "tk_DosPuntos";
+        case Token::SignoIgual:
+            return "tk_SignoIgual";
+        case Token::PuntoComa:
+            return "tk_PuntoComa";
+        //OPERANDOS
         case Token::Suma:
-            return "tk_sum";
+            return "tk_Suma";
         case Token::Resta:
-            return "tk_rst";
+            return "tk_Resta";
         case Token::Multiplicacion:
-            return "tk_mul";
+            return "tk_Multi";
         case Token::Division:
-            return "tk_div";
-        case Token::Div:
-            return "tk_DIV";
+            return "tk_Division";
         case Token::Mod:
-            return "tk_MOD";
+            return "tk_Mod";
+        case Token::Div:
+            return "tk_Div";
         case Token::Var:
-            return "tk_var";
-        case Token::AsignarWhile:
-            return "tk_AsgW";
-        case Token::Diferente:
-            return "tk_Dif";
+            return "tk_Var";
         default:
             return "Unknown";
     }

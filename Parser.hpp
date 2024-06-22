@@ -1,8 +1,10 @@
 #ifndef __PARSER_HPP__
 #define __PARSER_HPP__
 
+#include <vector>
+#include "ParserImpl.hpp"
 #include "Lexer.hpp"
-#include "LexerImpl.hpp"
+#include "LppAst.hpp"
 
 class Parser
 {
@@ -13,13 +15,21 @@ public:
 
     int parse();
 
-    int getValue() const
-    { return value; }
+    void addStmt(AstNode *stmt)
+    { stmts.push_back(stmt); }
+
+    const std::vector<AstNode *>& getStmts() const
+    { return stmts; }
+
+    Lexer& getLexer()
+    { return lexer; }
+
+    const Lexer& getLexer() const
+    { return lexer; }
 
 private:
-    int value;
+    std::vector<AstNode *> stmts;
     Lexer& lexer;
 };
-
 
 #endif

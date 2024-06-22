@@ -1,0 +1,279 @@
+%{
+#include "LppAst.hpp"
+%}
+
+%decls %{
+#include <iostream>
+#include <string>
+
+using stdstring = std::string;
+%}
+
+%option lang = "C++"
+
+%node AstNode %abstract %typedef
+
+%node Declaracion AstNode %abstract
+
+%node BinaryExpr AstNode %abstract = {
+    AstNode *expr1;
+    AstNode *expr2;
+}
+
+%node Programa Declaracion = {
+    AstNode *declaracion;
+}
+
+%node Bloque_Declaracion Declaracion = {
+    AstNode *declaracion1;
+    AstNode *declaracion2;
+}
+
+%node Bloque_Param Declaracion = {
+    AstNode *param1;
+    AstNode *param2;
+}
+
+%node Declaracion_Escriba Declaracion = {
+    AstNode *expr;
+}
+
+%node Declaracion_Asignacion Declaracion = {
+    AstNode *var;
+    AstNode *expr;
+}
+
+%node Declaracion_Variables Declaracion = {
+    AstNode *tipo;
+    AstNode *var;
+}
+
+%node Operacion_Suma BinaryExpr
+%node Operacion_Resta BinaryExpr
+%node Operacion_Multiplicacion BinaryExpr
+%node Operacion_Division BinaryExpr
+%node Operacion_Div BinaryExpr
+%node Operacion_Mod BinaryExpr
+
+%node Entero_Nodo AstNode = {
+    stdstring text;
+}
+
+%node Real_Nodo AstNode = {
+    stdstring text;
+}
+
+%node Caracter_Nodo AstNode = {
+    stdstring text;
+}
+
+%node Cadena_Nodo AstNode = {
+    stdstring text;
+}
+
+%node Booleano_Nodo AstNode = {
+    stdstring text;
+}
+
+%node Arreglo_Nodo AstNode = {
+    stdstring text;
+}
+
+%node Tipo_Nodo AstNode = {
+    stdstring text;
+}
+
+%node Var_Nodo AstNode = {
+    stdstring text;
+}
+
+%node Decimal_Nodo AstNode = {
+    double value;
+}
+
+%node Variable_Nodo AstNode = {
+    stdstring text;
+}
+
+%node Letras_Nodo AstNode = {
+    stdstring text;
+}
+
+%node Binario_Nodo AstNode = {
+    stdstring text;
+}
+
+%node Verdadero_Nodo AstNode = {
+    stdstring text;
+}
+
+%node Falso_Nodo AstNode = {
+    stdstring text;
+}
+
+%node Hexadecimal_Nodo AstNode = {
+    stdstring text;
+}
+
+%node Letra_Nodo AstNode = {
+    stdstring text;
+}
+
+%node Numero_Nodo AstNode = {
+    int value;
+}
+
+%node Eol_Nodo AstNode = {
+    stdstring text;
+}
+
+%operation %virtual stdstring toString(AstNode *this)
+
+toString(Programa) {
+    stdstring d = declaracion->toString();
+
+    return "inicio\n" + d + "fin";
+}
+
+toString(Bloque_Declaracion) {
+    stdstring d1 = declaracion1->toString();
+    stdstring d2 = declaracion2->toString();
+
+    return d1 + d2;
+}
+
+toString(Bloque_Param) {
+    stdstring d1 = param1->toString();
+    stdstring d2 = param2->toString();
+
+    return d1 + ", " + d2;
+}
+
+toString(Declaracion_Escriba) {
+    stdstring ex = expr->toString();
+
+    return "Escriba " + ex + "\n";
+}
+
+toString(Declaracion_Asignacion) {
+    stdstring v = var->toString();
+    stdstring e = expr->toString();
+
+    return v + "<-" + e + "\n";
+}
+
+toString(Declaracion_Variables) {
+    stdstring t = tipo->toString();
+    stdstring v = var->toString();
+
+    return t + ": " + v + "\n";
+}
+
+toString(Operacion_Suma) {
+    stdstring e1 = expr1->toString();
+    stdstring e2 = expr2->toString();
+
+    return e1 + " + " + e2;
+}
+
+toString(Operacion_Resta) {
+    std::string e1 = expr1->toString();
+    std::string e2 = expr2->toString();
+    return e1 + " - " + e2;
+}
+
+toString(Operacion_Multiplicacion) {
+    std::string e1 = expr1->toString();
+    std::string e2 = expr2->toString();
+    return e1 + " * " + e2;
+}
+
+toString(Operacion_Division) {
+    std::string e1 = expr1->toString();
+    std::string e2 = expr2->toString();
+    return e1 + " / " + e2;
+}
+
+toString(Operacion_Div) {
+    std::string e1 = expr1->toString();
+    std::string e2 = expr2->toString();
+    return e1 + " div " + e2;
+}
+
+toString(Operacion_Mod) {
+    std::string e1 = expr1->toString();
+    std::string e2 = expr2->toString();
+    return e1 + " mod " + e2;
+}
+
+toString(Entero_Nodo) {
+    return text;
+}
+
+toString(Real_Nodo) {
+    return text;
+}
+
+toString(Caracter_Nodo) {
+    return text;
+}
+
+toString(Cadena_Nodo) {
+    return text;
+}
+
+toString(Booleano_Nodo) {
+    return text;
+}
+
+toString(Arreglo_Nodo) {
+    return text;
+}
+
+toString(Tipo_Nodo) {
+    return text;
+}
+
+toString(Var_Nodo) {
+    return text;
+}
+
+toString(Decimal_Nodo) {
+    return std::to_string(value);
+}
+
+toString(Variable_Nodo) {
+    return text;
+}
+
+toString(Letras_Nodo) {
+    return text;
+}
+
+toString(Binario_Nodo) {
+    return text;
+}
+
+toString(Verdadero_Nodo) {
+    return text;
+}
+
+toString(Falso_Nodo) {
+    return text;
+}
+
+toString(Hexadecimal_Nodo) {
+    return text;
+}
+
+toString(Letra_Nodo) {
+    return text;
+}
+
+toString(Numero_Nodo) {
+    return std::to_string(value);
+}
+
+toString(Eol_Nodo) {
+    return text;
+}
