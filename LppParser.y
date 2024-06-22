@@ -136,7 +136,7 @@ declaracion: declaracion_escriba { $$ = $1; }
            | declaracion_para 
            | declaracion_mientras 
            | declaracion_condicional
-           | arreglo_inicializar
+           | arreglo_inicializar { $$ = $1; }
 ;
 
 declaracion_escriba: Escriba expr decl_Eol { $$ = new Declaracion_Escriba($2); }
@@ -158,37 +158,37 @@ encabezado_procedimiento: Variable ParAbierto parametros_opcional ParCerrado
 ;
 
 //FUNCION
-declaracion_funcion: Funcion encabezado_funcion decl_Eol init_declaraciones Inicio decl_Eol cuerpo_funcion Fin decl_Eol
+declaracion_funcion: Funcion encabezado_funcion decl_Eol init_declaraciones Inicio decl_Eol cuerpo_funcion Fin decl_Eol { $$ = new Declaracion_Funcion($2, $4, $7); }
 ;
 
-encabezado_funcion: Variable ParAbierto parametros_opcional ParCerrado DosPuntos tipos_datos
+encabezado_funcion: Variable ParAbierto parametros_opcional ParCerrado DosPuntos tipos_datos { $$ = new  Declaracion_Funcion_Encabezado($1, $3, $6); }
                   | Variable DosPuntos tipos_datos
 ;
 
-cuerpo_funcion: declaraciones Retorne expr decl_Eol
-              | declaraciones
-              | Retorne expr decl_Eol
+cuerpo_funcion: declaraciones Retorne expr decl_Eol { $$ = $1; }
+              | declaraciones { $$ = $1; }
+              | Retorne expr decl_Eol { $$ = $2; }
 ;
 
 //PARAMETROS
 parametros_opcional: /* vacio */
-              | parametros
+              | parametros { $$ = $1; }
 ;
 
-parametros: parametros Coma parametro
-          | parametro
+parametros: parametros Coma parametro { $$ = new Bloque_Param($1, $3); }
+          | parametro { $$ = $1; }
 ;
 
-parametro: tipos_datos Variable
-        | arreglo_inicializar
-        | Var tipos_datos Variable
+parametro: tipos_datos Variable { $$ = new Parametro_Init($1, $2); }
+        | arreglo_inicializar { $$ = $1; }
+        | Var tipos_datos Variable { $$ = new Parametro_Init($2, $3); }
 ;
 
 //VARIABLES
 asignacion: Variable Asignar expr decl_Eol { $$ = new Declaracion_Asignacion($1, $3); }
-          | arreglo Asignar Decimal decl_Eol
-          | arreglo Asignar Variable decl_Eol
-          | arreglo Asignar arreglo decl_Eol
+          | arreglo Asignar Decimal decl_Eol { $$ = new Declaracion_Asignacion($1, $3); }
+          | arreglo Asignar Variable decl_Eol { $$ = new Declaracion_Asignacion($1, $3); }
+          | arreglo Asignar arreglo decl_Eol { $$ = new Declaracion_Asignacion($1, $3); }
 ;
 
 lista_variables: lista_variables Coma Variable { $$ = new Bloque_Param($1, $3); }
@@ -202,14 +202,14 @@ condicion: Si sentencias_comparacion condicional_entonces
 ;
 
 sino_opcional: /* vacio */
-            | Sino decl_Eol Retorne expr
-            | Sino decl_Eol declaraciones
+            | Sino decl_Eol Retorne expr decl_Eol
+            | Sino decl_Eol declaraciones decl_Eol
             | sino_opcional Sino Si sentencias_comparacion condicional_entonces
             | Sino Si sentencias_comparacion condicional_entonces
 ;
 
-condicional_entonces: Entonces decl_Eol Retorne expr
-                    | Entonces decl_Eol declaraciones
+condicional_entonces: Entonces decl_Eol Retorne expr decl_Eol
+                    | Entonces decl_Eol declaraciones decl_Eol
 ;
 
 fin_si: Fin Si decl_Eol
@@ -247,15 +247,15 @@ sentencia_comparacion: expr comparacion expr
 ;
 
 //ARREGLO
-arreglo: Variable arreglo_brackets
+arreglo: Variable arreglo_brackets { $$ = new Array($1, $2); }
 ;
 
-arreglo_inicializar: Var Arreglo arreglo_brackets De Entero Variable decl_Eol
-                | Arreglo arreglo_brackets De Entero Variable decl_Eol
+arreglo_inicializar: Var Arreglo arreglo_brackets De Entero Variable decl_Eol { $$ = new Var_Array_Init($3, $6); }
+                | Arreglo arreglo_brackets De Entero Variable decl_Eol { $$ = new Var_Array_Init($2, $5); }
 ;
 
-arreglo_brackets: BrackAbierto Decimal BrackCerrado
-                | BrackAbierto Variable BrackCerrado
+arreglo_brackets: BrackAbierto Decimal BrackCerrado { $$ = new Array_Brackets($2); }
+                | BrackAbierto Variable BrackCerrado { $$ = new Array_Brackets($2); }
 ;
 
 comparacion: Igual { $$ = $1; }

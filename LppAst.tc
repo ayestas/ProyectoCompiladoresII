@@ -5,6 +5,7 @@
 %decls %{
 #include <iostream>
 #include <string>
+#include <vector>
 
 using stdstring = std::string;
 %}
@@ -18,6 +19,10 @@ using stdstring = std::string;
 %node BinaryExpr AstNode %abstract = {
     AstNode *expr1;
     AstNode *expr2;
+}
+
+%node SingleExpr AstNode %abstract = {
+    AstNode *expr;
 }
 
 %node Programa Declaracion = {
@@ -34,6 +39,18 @@ using stdstring = std::string;
     AstNode *param2;
 }
 
+%node Declaracion_Funcion Declaracion = {
+    AstNode *encabezado;
+    AstNode *init;
+    AstNode *cuerpo;
+}
+
+%node Declaracion_Funcion_Encabezado Declaracion = {
+    AstNode *var;
+    AstNode *parametros;
+    AstNode *tipo;
+}
+
 %node Declaracion_Escriba Declaracion = {
     AstNode *expr;
 }
@@ -44,6 +61,16 @@ using stdstring = std::string;
 }
 
 %node Declaracion_Variables Declaracion = {
+    AstNode *tipo;
+    AstNode *var;
+}
+
+%node Parametro_Init Declaracion = {
+    AstNode *tipo;
+    AstNode *var;
+}
+
+%node Var_Parametro_Init Declaracion = {
     AstNode *tipo;
     AstNode *var;
 }
@@ -123,6 +150,11 @@ using stdstring = std::string;
     int value;
 }
 
+%node Array BinaryExpr
+%node Array_Brackets SingleExpr
+%node Array_Init BinaryExpr
+%node Var_Array_Init BinaryExpr
+
 %node Eol_Nodo AstNode = {
     stdstring text;
 }
@@ -132,7 +164,7 @@ using stdstring = std::string;
 toString(Programa) {
     stdstring d = declaracion->toString();
 
-    return "inicio\n" + d + "fin";
+    return "Inicio\n" + d + "Fin";
 }
 
 toString(Bloque_Declaracion) {
@@ -147,6 +179,22 @@ toString(Bloque_Param) {
     stdstring d2 = param2->toString();
 
     return d1 + ", " + d2;
+}
+
+toString(Declaracion_Funcion) {
+    stdstring e = encabezado->toString();
+    stdstring i = init->toString();
+    stdstring c = cuerpo->toString();
+
+    return "Funcion " + e + "\n" + i + "\nInicio" + c + "Fin";
+}
+
+toString(Declaracion_Funcion_Encabezado) {
+    stdstring v = var->toString();
+    stdstring p = parametros->toString();
+    stdstring t = tipo->toString();
+
+    return v + "(" + p + "): " + t;
 }
 
 toString(Declaracion_Escriba) {
@@ -167,6 +215,20 @@ toString(Declaracion_Variables) {
     stdstring v = var->toString();
 
     return t + ": " + v + "\n";
+}
+
+toString(Parametro_Init) {
+    stdstring t = tipo->toString();
+    stdstring v = var->toString();
+
+    return t + " " + v;
+}
+
+toString(Var_Parametro_Init) {
+    stdstring t = tipo->toString();
+    stdstring v = var->toString();
+
+    return "var" + t + " " + v;
 }
 
 toString(Operacion_Suma) {
@@ -272,6 +334,29 @@ toString(Letra_Nodo) {
 
 toString(Numero_Nodo) {
     return std::to_string(value);
+}
+
+toString(Array) {
+    std::string e1 = expr1->toString();
+    std::string e2 = expr2->toString();
+    return e1 + e2;
+}
+
+toString(Array_Brackets) {
+    std::string e = expr->toString();
+    return "[" + e + "]";
+}
+
+toString(Array_Init) {
+    std::string e1 = expr1->toString();
+    std::string e2 = expr2->toString();
+    return "Arreglo " + e1 + " De Entero " + e2 + "\n";
+}
+
+toString(Var_Array_Init) {
+    std::string e1 = expr1->toString();
+    std::string e2 = expr2->toString();
+    return "Var Arreglo " + e1 + " De Entero " + e2 + "\n";
 }
 
 toString(Eol_Nodo) {
